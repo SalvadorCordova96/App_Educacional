@@ -1,12 +1,13 @@
-from marshmallow import fields, validate
+from marshmallow import fields, validate, EXCLUDE # Added EXCLUDE
 from app.extensions import ma
 from .base_schemas import BaseSQLAlchemySchema
+from ..models.mensaje import Mensaje # Added import for Mensaje model
 
 class MensajeSchema(BaseSQLAlchemySchema):
     class Meta:
-        model = "Mensaje"
+        model = Mensaje # Changed from string to class
         load_instance = True
-        unknown = ma.EXCLUDE
+        unknown = EXCLUDE # Changed from ma.EXCLUDE to EXCLUDE
 
     id = fields.Int(dump_only=True)
     contenido = fields.Str(

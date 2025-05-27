@@ -1,12 +1,11 @@
 # backend/app/__init__.py
 import os
 from flask import Flask, jsonify
-from flask_migrate import Migrate
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from .config import config_by_name
 from .auth.jwt_callbacks import configure_jwt_callbacks
-from .extensions import db, bcrypt  # Usar instancias centralizadas
+from .extensions import db, bcrypt, redis_client  # Usar instancias centralizadas
 
 def create_app(config_name=None):
     """Factory principal de la aplicación Flask."""
@@ -26,8 +25,11 @@ def create_app(config_name=None):
 
     # Inicializar extensiones con la app
     db.init_app(app)
-    Migrate(app, db)
-    CORS(app, resources={r"/api/*": {"origins": "*"}})
+    # Si usas redis_client, inicialízalo aquí si es necesario
+    # redis_client.init_app(app)  # Descomentar si se requiere inicialización
+
+    # Habilitar CORS globalmente
+    CORS(app)
 
     jwt_manager = JWTManager()
     jwt_manager.init_app(app)
@@ -42,6 +44,32 @@ def create_app(config_name=None):
     from .api import api_bp
 
     app.register_blueprint(api_bp, url_prefix="/api")
+
+    # Registrar blueprint de autenticación si existe
+    try:
+        from .auth.routes import auth_bp
+        app.register_blueprint(auth_bp, url_prefix="/api/auth")
+        print("INFO: Blueprint de autenticación registrado en /api/auth")
+    except ImportError:
+        print("ADVERTENCIA: No se pudo importar el blueprint de autenticación. Las rutas de /api/auth no estarán disponibles.")
+
+    # Manejo global de errores para devolver siempre JSON en 404 y 405
+    @app.errorhandler(404)
+    def not_found_error(error):
+        return jsonify({"error": "Ruta no encontrada", "status": 404}), 404
+
+    @app.errorhandler(405)
+    def method_not_allowed_error(error):
+        return jsonify({"error": "Método no permitido", "status": 405}), 405
+
+    # Manejo global de errores para devolver siempre JSON en 400 (errores de validación)
+    @app.errorhandler(400)
+    def bad_request_error(error):
+        # Si el error tiene descripción (por ejemplo, de Marshmallow), inclúyela
+        description = getattr(error, 'description', None)
+        if description:
+            return jsonify({"error": description, "status": 400}), 400
+        return jsonify({"error": "Solicitud incorrecta", "status": 400}), 400
 
     # Configurar contexto de aplicación para la base de datos
     with app.app_context():
@@ -59,11 +87,6 @@ def create_app(config_name=None):
         #        de tablas fuera del control de las migraciones.
         # db.create_all() # <--- LÍNEA ELIMINADA
         print("INFO: Modelos cargados y mapeadores configurados. Usar 'flask db upgrade' para el esquema.")
-
-    # Registro de blueprints
-    from .auth.routes import auth_bp
-
-    app.register_blueprint(auth_bp)
 
     # Endpoint de salud
     @app.route("/api/health", methods=["GET"])

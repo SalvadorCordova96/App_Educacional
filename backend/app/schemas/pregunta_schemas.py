@@ -4,6 +4,7 @@ from marshmallow_sqlalchemy import auto_field
 from datetime import datetime
 from .base_schemas import BaseSchema, BaseSQLAlchemySchema, PaginacionSchema
 from ..models.pregunta import Pregunta
+from ..models.opcion_respuesta import OpcionRespuesta # Added import
 
 
 class OpcionRespuestaSchema(BaseSQLAlchemySchema):
@@ -12,7 +13,7 @@ class OpcionRespuestaSchema(BaseSQLAlchemySchema):
     """
 
     class Meta:
-        model = "OpcionRespuesta"
+        model = OpcionRespuesta # Changed from string to class
         load_instance = True
         unknown = EXCLUDE
 
@@ -102,15 +103,15 @@ class PreguntaSchema(BaseSQLAlchemySchema):
         ),
     )
 
-    es_obligatoria = auto_field(
-        load_default=True,
-        error_messages={
-            "invalid": "El campo es_obligatoria debe ser un valor booleano"
-        },
-    )
+    # es_obligatoria = auto_field( # Removed as it's not in the model
+    #     load_default=True,
+    #     error_messages={
+    #         "invalid": "El campo es_obligatoria debe ser un valor booleano"
+    #     },
+    # )
 
     fecha_creacion = auto_field(dump_only=True)
-    fecha_actualizacion = auto_field(dump_only=True)
+    # fecha_actualizacion = auto_field(dump_only=True) # Removed as it's not in the model
 
     # Relaciones
     evaluacion_id = auto_field(required=True, load_only=True)

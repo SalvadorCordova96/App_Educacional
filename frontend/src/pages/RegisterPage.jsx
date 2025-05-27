@@ -10,32 +10,52 @@ function RegisterPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [nombreCompleto, setNombreCompleto] = useState('');
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setSuccess('');
     if (password !== confirmPassword) {
       setError('Las contraseñas no coinciden.');
       return;
     }
     setLoading(true);
     try {
-      // [IMPLEMENTACION] Registro real de usuario con backend
       const data = await apiPost('/auth/register', {
         correo_electronico: email,
         password,
         confirmar_password: confirmPassword,
-        nombre_completo: email.split('@')[0], // Puedes pedir el nombre real en el formulario si lo prefieres
+        nombre_completo: nombreCompleto,
         rol: 'alumno'
       });
       setLoading(false);
-      // Redirigir o mostrar éxito
-      window.location.href = '/login';
+      setSuccess('¡Registro exitoso! Ahora puedes iniciar sesión.');
+      setEmail('');
+      setPassword('');
+      setConfirmPassword('');
+      setNombreCompleto('');
+      // Opcional: redirigir después de unos segundos
+      // setTimeout(() => window.location.href = '/login', 2000);
     } catch (err) {
       setLoading(false);
-      setError(err.message || 'Error al registrar usuario');
+      // Mostrar el error real del backend si existe
+      if (err && err.message) {
+        // Si el error es un objeto de validación, mostrarlo bonito
+        try {
+          const errObj = JSON.parse(err.message);
+          if (typeof errObj === 'object') {
+            setError(Object.entries(errObj).map(([campo, msgs]) => `${campo}: ${Array.isArray(msgs) ? msgs.join(', ') : msgs}`).join(' | '));
+            return;
+          }
+        } catch (e) {}
+        setError(err.message);
+      } else {
+        setError('Error al registrar usuario');
+      }
     }
   };
 
@@ -49,6 +69,14 @@ function RegisterPage() {
           value={email}
           onChange={e => setEmail(e.target.value)}
           placeholder="usuario@correo.com"
+          required
+        />
+        <TextInput
+          label="Nombre completo"
+          type="text"
+          value={nombreCompleto}
+          onChange={e => setNombreCompleto(e.target.value)}
+          placeholder="Nombre completo"
           required
         />
         <TextInput
@@ -67,6 +95,7 @@ function RegisterPage() {
           placeholder="••••••••"
           required
         />
+        {success && <div className="mb-2 text-sm text-center text-green-500">{success}</div>}
         {error && <div className="mb-2 text-sm text-center text-red-500">{error}</div>}
         <Button type="submit" disabled={loading}>
           {loading ? 'Registrando...' : 'Registrarse'}

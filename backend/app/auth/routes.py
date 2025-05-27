@@ -15,14 +15,16 @@ from flask_jwt_extended import (
 from marshmallow import ValidationError
 import datetime
 
-# Inicializar esquemas
-usuario_registro_schema = UsuarioRegistroSchema()
+# Inicializar esquemas con sesión de SQLAlchemy si usan load_instance
+usuario_registro_schema = UsuarioRegistroSchema(session=db.session)
 usuario_login_schema = UsuarioLoginSchema()
 mensaje_schema = MensajeSchema()
 
 
 @auth_bp.route("/register", methods=["POST"])
 def register_user():
+    print("[DEBUG] /register endpoint called")
+    print("[DEBUG] request.get_json():", request.get_json())
     # Validar y limpiar datos de entrada
     try:
         data = usuario_registro_schema.load(request.get_json())

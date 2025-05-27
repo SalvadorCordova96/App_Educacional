@@ -39,6 +39,7 @@ class EvaluacionSchema(BaseSQLAlchemySchema):
     )
 
     # instrucciones = fields.String()
+    instrucciones = auto_field(allow_none=True)
 
     tiempo_limite_minutos = auto_field(
         validate=validate.Range(
@@ -52,9 +53,9 @@ class EvaluacionSchema(BaseSQLAlchemySchema):
         )
     )
 
-    # puntaje_aprobacion = fields.Integer()
+    calificacion_aprobatoria = fields.Float(validate=validate_percentage)
 
-    # es_publica = fields.Boolean()
+    es_publica = auto_field()
 
     fecha_disponible_desde = auto_field(allow_none=True)
     fecha_disponible_hasta = auto_field(allow_none=True)
@@ -62,7 +63,10 @@ class EvaluacionSchema(BaseSQLAlchemySchema):
     fecha_actualizacion = auto_field(dump_only=True)
 
     # Relaciones
-    leccion_id = auto_field(required=True, load_only=True)
+    # leccion_id is used to associate an Evaluacion with a Leccion upon creation/update.
+    # The Evaluacion model itself does not have a leccion_id column.
+    # The Leccion model has an evaluacion_id FK.
+    leccion_id = fields.Integer(required=False, load_only=True, allow_none=True) # Changed from auto_field
 
     leccion = fields.Nested(
         "LeccionSchema", only=("id", "titulo", "modulo_id"), dump_only=True
@@ -97,12 +101,12 @@ class EvaluacionSchema(BaseSQLAlchemySchema):
                         "La fecha de disponibilidad hasta debe ser posterior a la fecha desde"
                     )
 
-    @validates("puntaje_aprobacion")
-    def validate_puntaje_aprobacion(self, value):
-        """Valida que el puntaje de aprobación sea un múltiplo de 0.5."""
+    @validates("calificacion_aprobatoria")
+    def validate_calificacion_aprobatoria(self, value):
+        """Valida que la calificación aprobatoria sea un múltiplo de 0.5."""
         if value is not None and (value * 10) % 5 != 0:
             raise ValidationError(
-                "El puntaje de aprobación debe ser un múltiplo de 0.5"
+                "La calificación aprobatoria debe ser un múltiplo de 0.5"
             )
 
 
@@ -146,13 +150,13 @@ class EvaluacionCreateSchema(BaseSchema):
         ),
     )
 
-    puntaje_aprobacion = fields.Float(
+    calificacion_aprobatoria = fields.Float(
         required=True,
         validate=[
             validate.Range(
                 min=0,
                 max=100,
-                error="El puntaje de aprobación debe estar entre 0 y 100",
+                error="La calificación aprobatoria debe estar entre 0 y 100",
             ),
             validate_percentage,
         ],
@@ -211,12 +215,12 @@ class EvaluacionCreateSchema(BaseSchema):
                         "La fecha de disponibilidad hasta debe ser posterior a la fecha desde"
                     )
 
-    @validates("puntaje_aprobacion")
-    def validate_puntaje_aprobacion(self, value):
-        """Valida que el puntaje de aprobación sea un múltiplo de 0.5."""
+    @validates("calificacion_aprobatoria")
+    def validate_calificacion_aprobatoria(self, value):
+        """Valida que la calificación aprobatoria sea un múltiplo de 0.5."""
         if value is not None and (value * 10) % 5 != 0:
             raise ValidationError(
-                "El puntaje de aprobación debe ser un múltiplo de 0.5"
+                "La calificación aprobatoria debe ser un múltiplo de 0.5"
             )
 
 
@@ -260,12 +264,12 @@ class EvaluacionUpdateSchema(BaseSchema):
         allow_none=True,
     )
 
-    puntaje_aprobacion = fields.Float(
+    calificacion_aprobatoria = fields.Float(
         validate=[
             validate.Range(
                 min=0,
                 max=100,
-                error="El puntaje de aprobación debe estar entre 0 y 100",
+                error="La calificación aprobatoria debe estar entre 0 y 100",
             ),
             validate_percentage,
         ],
@@ -315,12 +319,12 @@ class EvaluacionUpdateSchema(BaseSchema):
                         "La fecha de disponibilidad hasta debe ser posterior a la fecha desde"
                     )
 
-    @validates("puntaje_aprobacion")
-    def validate_puntaje_aprobacion(self, value):
-        """Valida que el puntaje de aprobación sea un múltiplo de 0.5."""
+    @validates("calificacion_aprobatoria")
+    def validate_calificacion_aprobatoria(self, value):
+        """Valida que la calificación aprobatoria sea un múltiplo de 0.5."""
         if value is not None and (value * 10) % 5 != 0:
             raise ValidationError(
-                "El puntaje de aprobación debe ser un múltiplo de 0.5"
+                "La calificación aprobatoria debe ser un múltiplo de 0.5"
             )
 
 

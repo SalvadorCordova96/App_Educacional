@@ -16,6 +16,10 @@ class Evaluacion(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     titulo = db.Column(db.String(255), nullable=False)
     descripcion = db.Column(db.Text)
+    instrucciones = db.Column(db.Text, nullable=True)  # New field
+    es_publica = db.Column(db.Boolean, nullable=False, default=True)  # New field
+    fecha_disponible_desde = db.Column(db.DateTime, nullable=True)  # New field
+    fecha_disponible_hasta = db.Column(db.DateTime, nullable=True)  # New field
     intentos_permitidos = db.Column(db.Integer, default=1)
     tiempo_limite_minutos = db.Column(db.Integer)  # Tiempo límite en minutos
     calificacion_aprobatoria = db.Column(
@@ -57,6 +61,14 @@ class Evaluacion(db.Model):
             "intentos_permitidos": self.intentos_permitidos,
             "tiempo_limite_minutos": self.tiempo_limite_minutos,
             "calificacion_aprobatoria": self.calificacion_aprobatoria,
+            "instrucciones": self.instrucciones,
+            "es_publica": self.es_publica,
+            "fecha_disponible_desde": self.fecha_disponible_desde.isoformat()
+            if self.fecha_disponible_desde
+            else None,
+            "fecha_disponible_hasta": self.fecha_disponible_hasta.isoformat()
+            if self.fecha_disponible_hasta
+            else None,
             "fecha_creacion": self.fecha_creacion.isoformat()
             if self.fecha_creacion
             else None,
@@ -73,6 +85,10 @@ class Evaluacion(db.Model):
         titulo,
         leccion_id,
         descripcion=None,
+        instrucciones=None,
+        es_publica=True,
+        fecha_disponible_desde=None,
+        fecha_disponible_hasta=None,
         intentos_permitidos=1,
         tiempo_limite_minutos=None,
         calificacion_aprobatoria=70.0,
@@ -82,6 +98,10 @@ class Evaluacion(db.Model):
         nueva_evaluacion = cls(
             titulo=titulo,
             descripcion=descripcion,
+            instrucciones=instrucciones,
+            es_publica=es_publica,
+            fecha_disponible_desde=fecha_disponible_desde,
+            fecha_disponible_hasta=fecha_disponible_hasta,
             intentos_permitidos=intentos_permitidos,
             tiempo_limite_minutos=tiempo_limite_minutos,
             calificacion_aprobatoria=calificacion_aprobatoria,

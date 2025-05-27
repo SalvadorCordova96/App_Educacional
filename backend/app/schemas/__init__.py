@@ -69,6 +69,8 @@ from .inscripcion_schemas import (
 
 from .archivo_cargado_schemas import ArchivoCargadoSchema, ArchivoCargadoCreateSchema  # BACKEND-REVIEW: 2025-05-20 - SCHEMA-UPLOAD-01
 
+from .mensaje_schemas import MensajeSchema # Added import for MensajeSchema
+
 # Exportar todos los esquemas para facilitar las importaciones
 __all__ = [
     # Esquemas base
@@ -124,4 +126,6 @@ __all__ = [
     # Archivos cargados
     "ArchivoCargadoSchema",
     "ArchivoCargadoCreateSchema",
+    # Mensajes
+    "MensajeSchema", # Added MensajeSchema to __all__
 ]

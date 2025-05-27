@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: educativa_backend
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/app
+    environment:
+      - FLASK_ENV=development
+      - FLASK_APP=wsgi:app
+      - DATABASE_URL=postgresql://user:password@db:5432/appdb
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+    depends_on:
+      - db
+      - redis
+    networks:
+      - educativa_network
+
+  db:
+    image: postgres:14-alpine
+    container_name: educativa_postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=appdb
+    networks:
+      - educativa_network
+
+  redis:
+    image: redis:6-alpine
+    container_name: educativa_redis
+    volumes:
+      - redis_data:/data
+    networks:
+      - educativa_network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  educativa_network:
+    driver: bridge

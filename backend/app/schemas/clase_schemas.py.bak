@@ -1,0 +1,285 @@
+# app/schemas/clase_schemas.py
+from marshmallow import fields, validate, validates, ValidationError, EXCLUDE
+from marshmallow_sqlalchemy import auto_field
+from datetime import datetime
+from .base_schemas import BaseSchema, BaseSQLAlchemySchema, PaginacionSchema
+from ..models.clase import Clase
+from .validators import validate_positive_number, validate_date_not_in_past
+
+class ClaseSchema(BaseSQLAlchemySchema):
+    """
+    Esquema para la serialización/deserialización de objetos Clase.
+    """
+    class Meta:
+        model = Clase
+        load_instance = True
+        include_fk = True
+        unknown = EXCLUDE
+    
+    id = auto_field(dump_only=True)
+    titulo = auto_field(
+        required=True, 
+        validate=validate.Length(
+            min=3, 
+            max=255,
+            error="El título debe tener entre 3 y 255 caracteres"
+        )
+    )
+    
+    descripcion = auto_field(
+        validate=validate.Length(
+            max=1000,
+            error="La descripción no puede exceder los 1000 caracteres"
+        )
+    )
+    
+    # El campo codigo_acceso ha sido eliminado ya que no existe en el modelo Clase
+    
+    imagen_url = auto_field(
+        allow_none=True,
+        validate=validate.URL(
+            error="La URL de la imagen no es válida"
+        )
+    )
+    
+    # El campo estado ha sido eliminado ya que no existe en el modelo Clase
+    # Se utiliza el campo activa (booleano) en su lugar
+    
+    # El campo es_publica ha sido eliminado ya que no existe en el modelo Clase
+    # Se utiliza el campo activa (booleano) en su lugar
+    
+    fecha_creacion = auto_field(dump_only=True)
+    fecha_actualizacion = auto_field(dump_only=True)
+    # Los campos fecha_inicio y fecha_fin han sido eliminados ya que no existen en el modelo Clase
+    
+    # Relaciones
+    profesor_id = auto_field(required=True)
+    profesor = fields.Nested(
+        'UsuarioSchema', 
+        only=('id', 'nombre_completo', 'correo_electronico'), 
+        dump_only=True
+    )
+    
+    modulos = fields.Nested(
+        'ModuloSchema', 
+        many=True, 
+        exclude=('clase',), 
+        dump_only=True
+    )
+    
+    estudiantes = fields.Nested(
+        'UsuarioSchema', 
+        many=True, 
+        only=('id', 'nombre_completo', 'correo_electronico'), 
+        dump_only=True
+    )
+    
+    # Validaciones personalizadas
+    @validates('titulo')
+    def validate_titulo(self, value):
+        """Valida que el título no esté vacío."""
+        if not value or not value.strip():
+            raise ValidationError('El título no puede estar vacío')
+    
+    @validates('fecha_fin')
+    def validate_fechas(self, value, **kwargs):
+        """Valida que la fecha de fin sea posterior a la fecha de inicio."""
+        if 'fecha_inicio' in self.context and value:
+            fecha_inicio = self.context['fecha_inicio']
+            if isinstance(fecha_inicio, str):
+                fecha_inicio = datetime.fromisoformat(fecha_inicio.replace('Z', '+00:00'))
+            if isinstance(value, str):
+                value = datetime.fromisoformat(value.replace('Z', '+00:00'))
+            
+            if value < fecha_inicio:
+                raise ValidationError('La fecha de fin debe ser posterior a la fecha de inicio')
+
+class ClaseCreateSchema(BaseSchema):
+    """
+    Esquema para la creación de nuevas clases.
+    """
+    titulo = fields.Str(
+        required=True, 
+        validate=validate.Length(
+            min=3, 
+            max=255,
+            error="El título debe tener entre 3 y 255 caracteres"
+        )
+    )
+    
+    descripcion = fields.Str(
+        validate=validate.Length(
+            max=1000,
+            error="La descripción no puede exceder los 1000 caracteres"
+        ),
+        allow_none=True
+    )
+    
+    imagen_url = fields.Url(
+        allow_none=True,
+        error_messages={
+            'invalid': 'La URL de la imagen no es válida'
+        }
+    )
+    
+    es_publica = fields.Bool(
+        load_default=True,
+        error_messages={
+            'invalid': 'El campo es_publica debe ser un valor booleano'
+        }
+    )
+    
+    fecha_inicio = fields.DateTime(
+        allow_none=True,
+        format='iso',
+        error_messages={
+            'invalid': 'Formato de fecha inválido. Use el formato ISO 8601'
+        }
+    )
+    
+    fecha_fin = fields.DateTime(
+        allow_none=True,
+        format='iso',
+        error_messages={
+            'invalid': 'Formato de fecha inválido. Use el formato ISO 8601'
+        }
+    )
+    
+    @validates('titulo')
+    def validate_titulo(self, value):
+        """Valida que el título no esté vacío."""
+        if not value or not value.strip():
+            raise ValidationError('El título no puede estar vacío')
+    
+    @validates('fecha_fin')
+    def validate_fechas(self, value, **kwargs):
+        """Valida que la fecha de fin sea posterior a la fecha de inicio."""
+        if 'fecha_inicio' in self.context and value:
+            fecha_inicio = self.context['fecha_inicio']
+            if isinstance(fecha_inicio, str):
+                fecha_inicio = datetime.fromisoformat(fecha_inicio.replace('Z', '+00:00'))
+            if isinstance(value, str):
+                value = datetime.fromisoformat(value.replace('Z', '+00:00'))
+            
+            if value < fecha_inicio:
+                raise ValidationError('La fecha de fin debe ser posterior a la fecha de inicio')
+
+class ClaseUpdateSchema(BaseSchema):
+    """
+    Esquema para la actualización de clases existentes.
+    """
+    titulo = fields.Str(
+        validate=validate.Length(
+            min=3, 
+            max=255,
+            error="El título debe tener entre 3 y 255 caracteres"
+        ),
+        allow_none=True
+    )
+    
+    descripcion = fields.Str(
+        validate=validate.Length(
+            max=1000,
+            error="La descripción no puede exceder los 1000 caracteres"
+        ),
+        allow_none=True
+    )
+    
+    imagen_url = fields.Url(
+        allow_none=True,
+        error_messages={
+            'invalid': 'La URL de la imagen no es válida'
+        }
+    )
+    
+    # El campo es_publica ha sido eliminado ya que no existe en el modelo Clase
+    # Se utiliza el campo activa (booleano) en su lugar
+    
+    # Los campos fecha_inicio y fecha_fin han sido eliminados ya que no existen en el modelo Clase
+    
+    @validates('titulo')
+    def validate_titulo(self, value):
+        """Valida que el título no esté vacío si se proporciona."""
+        if value is not None and not value.strip():
+            raise ValidationError('El título no puede estar vacío')
+    
+    @validates('fecha_fin')
+    def validate_fechas(self, value, **kwargs):
+        """Valida que la fecha de fin sea posterior a la fecha de inicio."""
+        if 'fecha_inicio' in self.context and value:
+            fecha_inicio = self.context['fecha_inicio']
+            if fecha_inicio and value:
+                if isinstance(fecha_inicio, str):
+                    fecha_inicio = datetime.fromisoformat(fecha_inicio.replace('Z', '+00:00'))
+                if isinstance(value, str):
+                    value = datetime.fromisoformat(value.replace('Z', '+00:00'))
+                
+                if value < fecha_inicio:
+                    raise ValidationError('La fecha de fin debe ser posterior a la fecha de inicio')
+
+class ClaseConModulosSchema(ClaseSchema):
+    """
+    Esquema que incluye los módulos de la clase con sus lecciones.
+    """
+    modulos = fields.Nested(
+        'ModuloConLeccionesSchema', 
+        many=True, 
+        exclude=('clase',), 
+        dump_only=True
+    )
+
+class ClaseEstadisticasSchema(ClaseSchema):
+    """
+    Esquema que incluye estadísticas de la clase.
+    """
+    total_estudiantes = fields.Int(
+        dump_only=True,
+        validate=validate.Range(
+            min=0,
+            error="El total de estudiantes no puede ser negativo"
+        )
+    )
+    
+    total_modulos = fields.Int(
+        dump_only=True,
+        validate=validate.Range(
+            min=0,
+            error="El total de módulos no puede ser negativo"
+        )
+    )
+    
+    total_lecciones = fields.Int(
+        dump_only=True,
+        validate=validate.Range(
+            min=0,
+            error="El total de lecciones no puede ser negativo"
+        )
+    )
+    
+    total_evaluaciones = fields.Int(
+        dump_only=True,
+        validate=validate.Range(
+            min=0,
+            error="El total de evaluaciones no puede ser negativo"
+        )
+    )
+    
+    promedio_calificaciones = fields.Float(
+        dump_only=True,
+        validate=validate.Range(
+            min=0,
+            max=100,
+            error="El promedio de calificaciones debe estar entre 0 y 100"
+        )
+    )
+
+class ClasePaginacionSchema(PaginacionSchema):
+    """
+    Esquema para la paginación de clases.
+    """
+    items = fields.Nested(ClaseSchema, many=True, dump_only=True)
+    estudiantes_abandonados = fields.Int(required=True)
+    calificacion_promedio = fields.Float(required=True, allow_none=True)
+    
+    # Distribución de calificaciones
+    distribucion_calificaciones = fields.Dict(keys=fields.Str(), values=fields.Int(), required=True)

@@ -1,0 +1,73 @@
+/* Compatibilidad con texto y zoom */
+html {
+  /* Fallback base para navegadores antiguos */
+  font-size: 16px;
+  line-height: 1.5;
+  min-height: 100%;
+  
+  /* Control de ajuste de tamaño de texto para mejor legibilidad */
+  /* Estándar moderno */
+  text-size-adjust: 100%;
+  
+  /* Prefijos para compatibilidad con navegadores antiguos */
+  -webkit-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  
+  /* Asegurar que las propiedades de texto se hereden correctamente */
+  -webkit-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  
+  /* Soporte para zoom y transformaciones */
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  -ms-transform: translateZ(0);
+  
+  /* Soporte para texto en dispositivos móviles */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Compatibilidad con tema */
+:root {
+  /* Valores por defecto */
+  --theme-color: #ffffff;
+  --theme-text: #000000;
+  
+  /* Soporte para modo oscuro */
+  @media (prefers-color-scheme: dark) {
+    --theme-color: #000000;
+    --theme-text: #ffffff;
+  }
+  
+  /* Fallback para navegadores antiguos */
+  @media screen and (min-resolution: 2dppx) {
+    --theme-color: #ffffff;
+    --theme-text: #000000;
+  }
+}
+
+/* Compatibilidad con navegadores antiguos */
+.no-js {
+  display: none;
+}
+
+/* Accesibilidad y rendimiento */
+html {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  
+  /* Mejor rendimiento en dispositivos móviles */
+  -webkit-tap-highlight-color: transparent;
+  
+  /* Soporte para navegadores antiguos */
+  -ms-touch-action: manipulation;
+  touch-action: manipulation;
+  
+  /* Mejor soporte para animaciones */
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}

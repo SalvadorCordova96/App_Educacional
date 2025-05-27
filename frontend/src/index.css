@@ -1,0 +1,47 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Estilos base mejorados - Compatibilidad con Edge */
+@layer base {
+  html {
+    /* Asegurar que el tamaño del texto se ajuste correctamente */
+    -ms-text-size-adjust: 100%;  /* Edge 12+ */
+    -webkit-text-size-adjust: 100%; /* Chrome, Safari, Edge */
+    -moz-text-size-adjust: 100%;   /* Firefox */
+    text-size-adjust: 100%;        /* Standard */
+    
+    /* Mejorar la renderización de fuentes */
+    -webkit-font-smoothing: antialiased;  /* Chrome, Safari */
+    -moz-osx-font-smoothing: grayscale;   /* Firefox */
+    text-rendering: optimizeLegibility;  /* Standard */
+    
+    /* Forzar aceleración por hardware */
+    -webkit-transform: translateZ(0);
+    -ms-transform: translateZ(0);
+    transform: translateZ(0);
+  }
+  
+  body {
+    /* Establecer un tamaño de fuente base y altura de línea */
+    font-size: 1rem;
+    line-height: 1.625;
+    
+    /* Mejorar la tipografía */
+    -webkit-font-feature-settings: 'kern' 1, 'liga' 1, 'calt' 1;
+    -moz-font-feature-settings: 'kern' 1, 'liga' 1, 'calt' 1;
+    -ms-font-feature-settings: 'kern' 1, 'liga' 1, 'calt' 1;
+    font-feature-settings: 'kern' 1, 'liga' 1, 'calt' 1;
+    
+    /* Asegurar que el body ocupe al menos toda la altura de la ventana */
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Reseteo de márgenes para Edge */
+  body, h1, h2, h3, h4, h5, h6, p, ol, ul {
+    margin: 0;
+    padding: 0;
+  }
+}

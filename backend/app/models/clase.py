@@ -35,7 +35,7 @@ class Clase(db.Model):
 
     # Relaciones
     docente_id = db.Column(db.Integer, db.ForeignKey("usuarios.id"), nullable=False)
-    docente = db.relationship("Usuario", backref="clases", lazy=True)
+    # docente = db.relationship("Usuario", backref="clases", lazy=True)
 
     inscripciones = db.relationship("InscripcionClase", back_populates="clase", lazy=True)
     archivos = db.relationship("ArchivoCargado", back_populates="clase", lazy=True)

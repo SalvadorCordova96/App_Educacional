@@ -8,16 +8,15 @@ export interface User {
   role: UserRole;
   token?: string;
   refreshToken?: string;
-  avatar?: string;
-  createdAt: string;
+  avatar?: string; // Present in original index.ts
+  createdAt: string; // Non-optional in original index.ts
   updatedAt?: string;
 }
 
 export interface AuthState {
   user: User | null;
   isAuthenticated: boolean;
-  isLoading: boolean;
-  loading: boolean;
+  isLoading: boolean; // Keep this one
   error?: string | null;
 }
 
@@ -32,7 +31,7 @@ export interface RegisterData extends LoginCredentials {
 }
 
 export interface AuthResponse {
-  user: User;
+  user: User; // Will use the User defined above
   token: string;
   refreshToken: string;
 }

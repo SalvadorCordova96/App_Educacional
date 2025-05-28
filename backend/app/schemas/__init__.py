@@ -2,7 +2,7 @@
 # Re-exportar todos los esquemas para facilitar las importaciones
 
 # Importar esquemas base
-from .base_schemas import BaseSchema, BaseSQLAlchemySchema, PaginacionSchema
+from .base_schemas import BaseSchema, BaseSQLAlchemySchema, PaginacionSchema, ErrorSchema, SuccessSchema, AuthResponseSchema
 
 # Importar esquemas de modelos
 from .usuario_schemas import (
@@ -77,6 +77,9 @@ __all__ = [
     "BaseSchema",
     "BaseSQLAlchemySchema",
     "PaginacionSchema",
+    "ErrorSchema", # Added
+    "SuccessSchema", # Added
+    "AuthResponseSchema", # Added
     # Usuarios
     "UsuarioSchema",
     "UsuarioLoginSchema",

@@ -45,13 +45,8 @@ def create_app(config_name=None):
 
     app.register_blueprint(api_bp, url_prefix="/api")
 
-    # Registrar blueprint de autenticación si existe
-    try:
-        from .auth.routes import auth_bp
-        app.register_blueprint(auth_bp, url_prefix="/api/auth")
-        print("INFO: Blueprint de autenticación registrado en /api/auth")
-    except ImportError:
-        print("ADVERTENCIA: No se pudo importar el blueprint de autenticación. Las rutas de /api/auth no estarán disponibles.")
+    # La autenticación (auth_bp) ahora se registra bajo api_bp en app/api/__init__.py
+    # Se elimina el registro directo aquí para evitar duplicación.
 
     # Manejo global de errores para devolver siempre JSON en 404 y 405
     @app.errorhandler(404)
@@ -74,7 +69,7 @@ def create_app(config_name=None):
     # Configurar contexto de aplicación para la base de datos
     with app.app_context():
         # Importar todos los modelos para que SQLAlchemy los registre
-        from .models import Usuario, InscripcionClase, Clase, ArchivoCargado, Mensaje, Respuesta, Pregunta, OpcionRespuesta, Evaluacion, Leccion, Modulo, Question, Answer
+        from .models import Usuario, InscripcionClase, Clase, ArchivoCargado, Mensaje, Respuesta, Pregunta, OpcionRespuesta, Evaluacion, Leccion, Modulo
 
         # Configurar las relaciones después de que todos los modelos estén definidos
         from sqlalchemy.orm import configure_mappers

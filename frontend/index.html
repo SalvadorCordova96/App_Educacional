@@ -19,13 +19,6 @@
     <link rel="stylesheet" href="/src/styles/compatibility.css" />
     <title>CogniSpark - Plataforma Educativa</title>
     <script>
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js')
-            .catch(err => console.log('Service Worker Error:', err));
-        });
-      }
-
       // Mejorar compatibilidad con navegadores
       document.documentElement.className = document.documentElement.className.replace('no-js', 'js');
     </script>

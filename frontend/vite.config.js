@@ -23,7 +23,7 @@ export default defineConfig(({ mode }) => {
         injectRegister: 'auto',
         // Deshabilitar el service worker en desarrollo
         devOptions: {
-          enabled: false
+          enabled: true
         },
         includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
         manifest: {
@@ -33,14 +33,20 @@ export default defineConfig(({ mode }) => {
           theme_color: '#ffffff',
           background_color: '#ffffff',
           display: 'standalone',
+          name: env.VITE_APP_NAME || 'App Educacional',
+          short_name: 'EduApp',
+          description: 'Aplicación educativa interactiva',
+          theme_color: '#ffffff',
+          background_color: '#ffffff',
+          display: 'standalone',
           icons: [
             {
-              src: '/android-chrome-192x192.png',
+              src: '/assets/icons/icon-192x192.png', // Corrected path
               sizes: '192x192',
               type: 'image/png',
             },
             {
-              src: '/android-chrome-512x512.png',
+              src: '/assets/icons/icon-512x512.png', // Corrected path
               sizes: '512x512',
               type: 'image/png',
             },

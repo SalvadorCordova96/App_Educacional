@@ -12,7 +12,5 @@ from .opcion_respuesta import OpcionRespuesta
 from .evaluacion import Evaluacion
 from .leccion import Leccion
 from .modulo import Modulo
-from .question import Question
-from .answer import Answer
 
-__all__ = ["Usuario", "InscripcionClase", "Clase", "ArchivoCargado", "Mensaje", "Respuesta", "Pregunta", "OpcionRespuesta", "Evaluacion", "Leccion", "Modulo", "Question", "Answer"]
+__all__ = ["Usuario", "InscripcionClase", "Clase", "ArchivoCargado", "Mensaje", "Respuesta", "Pregunta", "OpcionRespuesta", "Evaluacion", "Leccion", "Modulo"]

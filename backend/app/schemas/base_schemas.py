@@ -137,3 +137,45 @@ def validar_porcentaje(valor):
 
 # Esquemas comunes
 # La clase PaginacionSchema ya está definida anteriormente en el archivo
+
+
+# --- Utility Schemas (moved from schemas.py) ---
+class ErrorSchema(BaseSchema):
+    """
+    Esquema estándar para respuestas de error.
+    """
+
+    status = fields.Str(default="error")
+    message = fields.Str()
+    errors = fields.Dict(keys=fields.Str(), values=fields.List(fields.Str()))
+
+
+class SuccessSchema(BaseSchema):
+    """
+    Esquema estándar para respuestas exitosas.
+    """
+
+    status = fields.Str(default="success")
+    message = fields.Str()
+    data = fields.Dict()
+
+
+class AuthResponseSchema(SuccessSchema):
+    """
+    Esquema para la respuesta de autenticación exitosa.
+    """
+
+    access_token = fields.Str()
+    refresh_token = fields.Str()
+    user = fields.Method("get_user_data")
+
+    def get_user_data(self, obj):
+        user = obj.get("user")
+        if user: # Basic check if user object exists
+            return {
+                "id": user.id,
+                "nombre_completo": user.nombre_completo,
+                "correo_electronico": user.correo_electronico,
+                "rol": user.rol,
+            }
+        return None # Or handle as appropriate if user might be missing

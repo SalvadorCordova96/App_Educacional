@@ -119,7 +119,6 @@ class UsuarioRegistroSchema(UsuarioSchema):
             "activo",
             "fecha_creacion",
             "fecha_actualizacion",
-            "rol",
             "clases_impartidas",
             "inscripciones",
         )

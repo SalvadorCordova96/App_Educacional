@@ -67,7 +67,7 @@ from .inscripcion_schemas import (
     ProgresoEstudianteSchema,
 )
 
-from .archivo_cargado_schemas import ArchivoCargadoSchema, ArchivoCargadoCreateSchema  # BACKEND-REVIEW: 2025-05-20 - SCHEMA-UPLOAD-01
+from .archivo_cargado_schemas import ArchivoCargadoSchema  # ArchivoCargadoCreateSchema removed
 
 from .mensaje_schemas import MensajeSchema # Added import for MensajeSchema
 
@@ -127,8 +127,7 @@ __all__ = [
     "InscripcionConProgresoDetalladoSchema",
     "ProgresoEstudianteSchema",
     # Archivos cargados
-    "ArchivoCargadoSchema",
-    "ArchivoCargadoCreateSchema",
+    "ArchivoCargadoSchema", # ArchivoCargadoCreateSchema removed from __all__
     # Mensajes
     "MensajeSchema", # Added MensajeSchema to __all__
 ]

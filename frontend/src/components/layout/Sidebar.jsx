@@ -1,28 +1,78 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext'; // Import useAuth
 
-const sidebarItems = [
+// Define navigation items for public/unauthenticated users
+const publicItems = [
   { to: '/', label: 'Inicio' },
   { to: '/login', label: 'Iniciar Sesión' },
   { to: '/register', label: 'Registro' },
-  // Agrega más rutas según crezca la app
 ];
 
-function Sidebar() {
+function Sidebar() { // Removed user prop, will use useAuth directly
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, logout } = useAuth(); // Get user and logout from AuthContext
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login'); // Redirect to login after logout
+  };
+
+  // Base items for all authenticated users
+  let authenticatedNavItems = [
+    { to: '/dashboard', label: 'Dashboard' },
+    // { to: '/courses', label: 'Cursos' }, // General courses link, can be kept or removed if /docente/clases is preferred for teachers
+    { to: '/perfil', label: 'Perfil' },
+    { to: '/chat-nuevo', label: 'Chat IA' },
+    { to: '/settings', label: 'Configuración' },
+  ];
+
+  // Add teacher-specific items
+  if (user && user.rol === 'docente') {
+    authenticatedNavItems.splice(1, 0, { to: '/docente/clases', label: 'Mis Clases (Docente)' });
+  } else if (user && (user.rol === 'alumno' || user.rol === 'student')) { // Support 'student' role as well
+    // Link for students to see available classes
+     authenticatedNavItems.splice(1, 0, { to: '/alumno/clases', label: 'Clases Disponibles' });
+  }
+  // For admin, items could be different or include all of the above plus admin-specific links
+
+  // Define navigation items for public/unauthenticated users
+  const publicItems = [
+    { to: '/', label: 'Inicio' },
+    { to: '/login', label: 'Iniciar Sesión' },
+    { to: '/register', label: 'Registro' },
+  ];
+  
+  // Determine which items to display
+  const itemsToDisplay = user ? authenticatedNavItems : publicItems;
+
   return (
-    <aside className="flex flex-col w-56 h-full gap-4 px-4 py-8 bg-black shadow-xl bg-opacity-80 backdrop-blur-md">
-      <div className="mb-8 text-xl font-bold text-blue-400 select-none">AppEducacional</div>
+    <aside className="flex flex-col w-64 h-full gap-4 px-4 py-8 bg-gray-800 text-white shadow-xl">
+      <div className="mb-8 text-2xl font-bold text-center text-blue-400 select-none">
+        CogniSpark
+      </div>
       <nav className="flex flex-col gap-2">
-        {sidebarItems.map(item => (
+        {itemsToDisplay.map(item => (
           <Link
-            key={item.to}
+            key={item.label} 
             to={item.to}
-            className={`text-white px-3 py-2 rounded-lg transition-all duration-200 hover:bg-blue-900/60 hover:text-blue-300 ${location.pathname === item.to ? 'bg-blue-900/80 text-blue-300' : ''}`}
+            className={`px-3 py-2 rounded-md text-sm font-medium transition-colors duration-150 ease-in-out
+                        ${location.pathname === item.to 
+                          ? 'bg-blue-600 text-white' 
+                          : 'text-gray-300 hover:bg-gray-700 hover:text-white'}`}
           >
             {item.label}
           </Link>
         ))}
+        {user && ( 
+          <button
+            onClick={handleLogout}
+            className={`mt-auto px-3 py-2 rounded-md text-sm font-medium transition-colors duration-150 ease-in-out text-gray-300 hover:bg-red-700 hover:text-white w-full text-left`}
+          >
+            Cerrar Sesión
+          </button>
+        )}
       </nav>
     </aside>
   );

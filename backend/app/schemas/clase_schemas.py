@@ -19,8 +19,9 @@ class ClaseSchema(BaseSQLAlchemySchema):
         unknown = EXCLUDE
 
     id = auto_field(dump_only=True)
+    codigo_inscripcion = auto_field(dump_only=True, allow_none=True) # Added
     nombre = auto_field(
-        required=True,
+        required=True, # For general validation, but mainly for dump
         validate=validate.Length(
             min=3, max=255, error="El nombre debe tener entre 3 y 255 caracteres"
         ),
@@ -42,7 +43,7 @@ class ClaseSchema(BaseSQLAlchemySchema):
     fecha_actualizacion = auto_field(dump_only=True)
 
     # Relaciones
-    docente_id = auto_field(required=True)
+    docente_id = auto_field(dump_only=True) # Changed to dump_only
     docente = fields.Nested(
         "UsuarioSchema",
         only=("id", "nombre_completo", "correo_electronico"),

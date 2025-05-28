@@ -10,6 +10,7 @@ from app.courses import courses_bp
 from app.interactions import interactions_bp
 from app.main import main_bp
 from app.evaluations import evaluations_bp # Added import for evaluations
+from app.ia import ia_bp # Added import for ia module
 
 # Registramos los blueprints bajo el prefijo /api
 api_bp.register_blueprint(auth_bp, url_prefix="/auth")
@@ -21,3 +22,4 @@ api_bp.register_blueprint(main_bp, url_prefix="")  # Rutas raíz de la API
 # o eliminar/revisar la funcionalidad de evaluations_bp si ya no es relevante.
 # Por ahora, se registra para mantener la estructura, pero podría causar errores en ejecución.
 api_bp.register_blueprint(evaluations_bp, url_prefix="/evaluations")
+api_bp.register_blueprint(ia_bp, url_prefix='/ia') # Registered ia_bp

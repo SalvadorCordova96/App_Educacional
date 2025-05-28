@@ -18,22 +18,17 @@ class ArchivoCargadoSchema(BaseSQLAlchemySchema):
     nombre_original = auto_field(required=True)
     nombre_servidor = auto_field(dump_only=True)
     tipo_mime = auto_field(required=True)
-    tamano = auto_field(required=True)
+    tamano = auto_field(required=True) # Will be set from file properties, but good for serialization
     ruta_almacenamiento = auto_field(dump_only=True)
-    usuario_id = auto_field(required=True)
-    clase_id = auto_field(allow_none=True)
+    usuario_id = auto_field(dump_only=True) # Will be set from JWT, dump_only for response
+    clase_id = auto_field(required=True, allow_none=False) # Changed as per model
     fecha_subida = auto_field(dump_only=True)
     estado_procesamiento_texto = auto_field(dump_only=True)
     texto_extraido = auto_field(dump_only=True)
     fecha_procesamiento = auto_field(dump_only=True)
     mensaje_error = auto_field(dump_only=True)
 
-class ArchivoCargadoCreateSchema(BaseSchema):
-    nombre_original = fields.Str(required=True, validate=validate.Length(min=1, max=255))
-    tipo_mime = fields.Str(required=True, validate=validate.OneOf(["application/pdf", "text/plain"]))
-    tamano = fields.Int(required=True, validate=validate.Range(min=1, max=10485760))  # 10MB max
-    usuario_id = fields.Int(required=True)
-    clase_id = fields.Int(allow_none=True)
-
-    class Meta:
-        unknown = EXCLUDE
+# ArchivoCargadoCreateSchema is removed as the creation process for file uploads
+# will primarily involve handling the file itself, and the ArchivoCargado record
+# will be created directly in the route handler using metadata from the file and request.
+# The ArchivoCargadoSchema will be used for serializing the response.

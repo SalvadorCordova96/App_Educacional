@@ -15,7 +15,7 @@ class ArchivoCargado(db.Model):
     tamano = db.Column(db.Integer, nullable=False)
     ruta_almacenamiento = db.Column(db.String(512), nullable=False)
     usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable=False)
-    clase_id = db.Column(db.Integer, db.ForeignKey('clases.id'), nullable=True)
+    clase_id = db.Column(db.Integer, db.ForeignKey('clases.id'), nullable=False) # Changed to nullable=False
     fecha_subida = db.Column(db.DateTime, default=datetime.utcnow)
     estado_procesamiento_texto = db.Column(db.String(20), default='pendiente')  # pendiente, procesado, error
     texto_extraido = db.Column(db.Text, nullable=True)

@@ -41,6 +41,13 @@ class Config:
         False  # Desactiva una característica de SQLAlchemy que no necesitamos
     )
 
+    # Ruta base del backend (directorio 'backend')
+    BACKEND_ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+    
+    # Carpeta para subida de archivos (ej: backend/uploads/)
+    UPLOAD_FOLDER = os.path.join(BACKEND_ROOT_DIR, 'uploads')
+
+
     # Otras configuraciones globales
     CORS_HEADERS = "Content-Type"
 
